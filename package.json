@@ -5,8 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "start": "npm-run-all clean build:*",
+    "lint": "next lint",
+    "start-backend": "cd ml && .\\venv\\Scripts\\Activate && python app.py"
   },
   "dependencies": {
     "@clerk/clerk-js": "^5.1.1",

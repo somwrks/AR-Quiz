@@ -21,8 +21,8 @@ This project is a test-taking website with facial recognition to detect cheating
 ## Getting Started
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/test-taking-website.git
-   cd test-taking-website
+   git clone https://github.com/somwrks/AR-Quiz.git
+   cd AR-Quiz
 2. Set up the backend:
     Create a virtual environment (optional but recommended)
     ```bash
@@ -51,6 +51,10 @@ This project is a test-taking website with facial recognition to detect cheating
    Start the Next.js development server:
    ```bash
    npm run dev
+   ```
+   Start the Backend Flask server:
+   ```bash
+   npm run start-backend
    ```
 4. Access the website:
    Open your browser and go to http://localhost:3000 to access the test-taking website
