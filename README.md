@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Test Taking Website with Facial Recognition
+
+## Overview
+This project is a test-taking website with facial recognition to detect cheating behaviors. Users will be required to keep looking into the camera during the test, and if they look away or exhibit cheating behaviors, the test will be terminated. The project uses Next.js for the frontend, Flask for the backend, OpenCV/Mediapipe for facial recognition, and Supabase/Prisma for the database.
+
+![image](https://github.com/somwrks/AR-Quiz/assets/85481905/49d4022f-0748-4e67-b8ab-895e30e82f54)
+
+
+## Tech Stack
+- Frontend:
+  - Next.js
+  - Tailwind CSS
+  - React Webcam
+- Backend:
+  - Flask
+  - OpenCV/Mediapipe
+  - Prisma (interacting with Supabase)
+- Database:
+  - Supabase (PostgreSQL)
 
 ## Getting Started
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-username/test-taking-website.git
+   cd test-taking-website
+2. Set up the backend:
+    Create a virtual environment (optional but recommended)
+    ```bash
+    python -m venv venv
+    source venv/bin/activate  # Activate the virtual environment
+    ```
+    Install dependencies
+    ```bash
+    pip install -r requirements.txt
+    ```
+    Set up environment variables:
+    Create a .env file based on .env.example and fill in the necessary credentials
+    Run the Flask app:
+    ```bash
+    flask run
+    ```
+3. Set up the frontend:
+   Navigate to the frontend directory:
+   ```bash
+   cd frontend
+   ```
+   Install dependencies:
+   ```bash
+   npm install
+   ```
+   Start the Next.js development server:
+   ```bash
+   npm run dev
+   ```
+4. Access the website:
+   Open your browser and go to http://localhost:3000 to access the test-taking website
 
-First, run the development server:
+## Project Structure
+- `backend/`: Contains Flask backend code, including facial recognition logic.
+- `frontend/`: Contains Next.js frontend code, including React Webcam integration.
+- `database/`: Contains SQL scripts for setting up the database schema.
+- `docs/`: Contains project documentation, including this README.md.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Contributing
+Feel free to contribute to this project by submitting pull requests. Make sure to follow the coding guidelines and provide clear commit messages.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## License
+This project is licensed under the MIT License.
