@@ -1,0 +1,18 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "supabase"
+  url      = env("DATABASE_URL")
+}
+
+model TestResult {
+  id         String   @id @default(uuid())
+  username   String
+  userId     String
+  dateTime   DateTime @default(now())
+  score      Int
+  livesLeft  Int
+}

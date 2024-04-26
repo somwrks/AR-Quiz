@@ -9,7 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@clerk/clerk-js": "^5.1.1",
+    "@clerk/nextjs": "^5.0.3",
+    "@prisma/client": "^5.13.0",
+    "@supabase/supabase-js": "^2.42.7",
     "next": "14.2.3",
+    "prisma": "^5.13.0",
     "react": "^18",
     "react-dom": "^18",
     "react-webcam": "^7.2.0"
