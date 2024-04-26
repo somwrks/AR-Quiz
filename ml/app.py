@@ -3,8 +3,14 @@ import cv2
 import numpy as np
 import base64
 import mediapipe as mp
+from prisma import Prisma
+
 
 app = Flask(__name__)
+prisma = Prisma()
+# @app.before_first_request
+# async def connect_to_prisma():
+#     await prisma.connect()
 
 mp_face_detection = mp.solutions.face_detection
 face_detection = mp_face_detection.FaceDetection()
@@ -12,12 +18,36 @@ mp_face_mesh = mp.solutions.face_mesh
 face_mesh = mp_face_mesh.FaceMesh(static_image_mode=False, max_num_faces=1, min_detection_confidence=0.5)
 
 CHEATING_THRESHOLD = 0.3
-EYE_GAZE_THRESHOLD = 0.2
+EYE_GAZE_THRESHOLD = 0.3
+@app.route('/create-test-result', methods=['POST'])
+async def create_test_result():
+    await prisma.connect()  
+    print("recieved for /create-test-result")
+    data = request.get_json()
+    username = data.get('username', '')
+    print(username)
+    userId = data.get('userId', '')
+    score = data.get('score', 0)
+    livesLeft = data.get('livesLeft', 0)
+    print(data)
 
+    try:
+        testresult = await prisma.testresult.create({
+            "data": {
+                "username": username,
+                "userId": userId,
+                "score": score,
+                "livesLeft": livesLeft
+            }
+        })
+        await prisma.disconnect()
+        return jsonify({'message': testresult})
+    except Exception as e:
+        print(e)
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/detect_cheating', methods=['POST'])
 def detect_cheating():
-    global lifeline
 
     image_data = request.get_json()['image']
 

@@ -1,16 +1,14 @@
-// prisma/schema.prisma
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma"
 }
 
 datasource db {
-  provider = "supabase"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model TestResult {
-  id         String   @id @default(uuid())
-  username   String
+  username   String   @id @default(uuid())
   userId     String
   dateTime   DateTime @default(now())
   score      Int

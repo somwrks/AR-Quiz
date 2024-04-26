@@ -2,12 +2,13 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import Webcam from "react-webcam";
-import { useSignIn, useUser } from "@clerk/nextjs";
+import { SignOutButton, useSignIn, useUser } from "@clerk/nextjs";
 import { PrismaClient } from "@prisma/client";
 import { SignIn } from "@clerk/nextjs";
 
 const IndexPage: React.FC = () => {
   const { user } = useUser();
+  const prisma = new PrismaClient();
 
   const webcamRef = useRef<Webcam>(null);
   const [testStarted, setTestStarted] = useState(false);
@@ -22,7 +23,7 @@ const IndexPage: React.FC = () => {
     if (testStarted) {
       const interval = setInterval(() => {
         handleCapture();
-      }, 1000);
+      }, 3000);
 
       return () => clearInterval(interval);
     }
@@ -70,29 +71,37 @@ const IndexPage: React.FC = () => {
   const handleCapture = async () => {
     if (webcamRef.current) {
       const imageSrc = webcamRef.current.getScreenshot();
-      if (imageSrc) {
-        try {
-          const response = await fetch("/api/detect_cheating", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ image: imageSrc.split(",")[1] }),
-          });
-          const data = await response.json();
-          const { cheating_detected } = data;
-          if (cheating_detected === 1 || cheating_detected === -1) {
-            setRemainingLifeline(remainingLifeline - 1);
-            alert("Cheating detected! You have lost a lifeline.");
-            if (remainingLifeline === 0) {
-              setTestStarted(false);
-              alert("Take the test again, because you were cheating.");
+      if (imageSrc && submit==false) {
+        setTimeout(async () => {
+          
+          try {
+            const response = await fetch("/api/detect_cheating", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ image: imageSrc.split(",")[1] }),
+            });
+            const data = await response.json();
+            const { cheating_detected } = data;
+            if (cheating_detected === 1 || cheating_detected === -1) {
+              setRemainingLifeline(remainingLifeline - 1);
+              setTimeout(() => {
+                alert("Cheating detected! You have lost a lifeline.");
+                
+              }, 0);
+              if (remainingLifeline === 0) {
+                setTestStarted(false);
+                setTimeout(() => {
+                  alert("Take the test again, because you were cheating.");
+                }, 0);
+              }
             }
+          } catch (error) {
+            console.error("Error detecting cheating:", error);
           }
-        } catch (error) {
-          console.error("Error detecting cheating:", error);
+        }, 0);
         }
-      }
     }
   };
   const handleclick = (e: Number) => {
@@ -100,16 +109,33 @@ const IndexPage: React.FC = () => {
   };
   const handleSubmit = async () => {
     setSubmit(true);
-    const prisma = new PrismaClient();
-    await prisma.testResult.create({
-      data: {
-        username: user?.username || "",
-        userId: user?.id || "",
-        score: index.length,
-        livesLeft: remainingLifeline,
-      },
-    });
+    try {
+      console.log(user)
+      const response = await fetch("/api/create-test-result", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: user?.username || "Anonymous",
+          userId: user?.id || "123",
+          score: index.length,
+          livesLeft: remainingLifeline,
+        }),
+      });
+      const data = await response.json();
+      console.log(data.message);
+    } catch (error) {
+      console.error("Error creating test result:", error);
+    }
   };
+
+
+
+  const handleReset = ()=>{
+    setIndex([])
+    setTestStarted(false)
+  }
 
   return (
     <div>
@@ -128,8 +154,10 @@ const IndexPage: React.FC = () => {
                 <h2>{question.text}</h2>
                 <div className="flex flex-row space-x-4">
                   {question.answer.map((i, e) => {
+                    console.log(question.l == index[z])
                     return (
-                      <button
+                      <button 
+                      key={e}
                         onClick={() => !submit && handleclick(e)}
                         className={`text-xl p-3 ${
                           submit
@@ -139,13 +167,15 @@ const IndexPage: React.FC = () => {
                             : ""
                         } `}
                       >
-                        {e}
+                        {i}
                       </button>
                     );
                   })}
                 </div>
               </div>
             ))}
+            <div className="flex flex-row space-x-5">
+
             <button
               className="text-xl bg-yellow-300 p-5"
               onClick={!submit ? handleSubmit : undefined}
@@ -156,15 +186,22 @@ const IndexPage: React.FC = () => {
             {submit && (
               <button
                 className="text-xl bg-yellow-300 p-5"
-                onClick={() => setTestStarted(false)}
+                onClick={handleReset}
               >
                 {" "}
                 Reset{" "}
               </button>
             )}
+            </div>
           </>
         ) : (
-          <button onClick={handleStartTest}>Start Test</button>
+          <>
+          <button onClick={handleStartTest} className="text-xl bg-green-300 p-5">Start Test</button>
+          <button  className="text-xl mx-4 bg-green-300 p-5">
+          <SignOutButton/>
+            
+          </button>
+          </>
         )}
       </>
     </div>
