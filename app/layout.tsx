@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { ClerkProvider, SignInButton, SignedIn, SignedOut } from '@clerk/nextjs';
-import { AppProps } from 'next/app';
+import {
+  ClerkProvider,
+  SignInButton,
+  SignedIn,
+  SignedOut,
+} from "@clerk/nextjs";
+import { AppProps } from "next/app";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,21 +22,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider frontendApi={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}>
-    <SignedOut>
-    <html>
-            <body>
-              <SignInButton />
-      </body>
-</html>
-            </SignedOut>
-            <SignedIn>
-            <html>
-            <body>
-        {children}
-      </body>
-</html>
-            </SignedIn>
+    <ClerkProvider proxyUrl={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}>
+      <SignedOut>
+        <html>
+          <body>
+            <SignInButton />
+          </body>
+        </html>
+      </SignedOut>
+      <SignedIn>
+        <html>
+          <body>{children}</body>
+        </html>
+      </SignedIn>
     </ClerkProvider>
   );
 }

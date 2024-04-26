@@ -7,7 +7,7 @@ import { PrismaClient } from "@prisma/client";
 import { SignIn } from "@clerk/nextjs";
 
 const IndexPage: React.FC = () => {
-  const { user, signIn } = useSignIn();
+  const { user } = useUser();
 
   const webcamRef = useRef<Webcam>(null);
   const [testStarted, setTestStarted] = useState(false);
@@ -111,76 +111,62 @@ const IndexPage: React.FC = () => {
     });
   };
 
-  const [login, setLogin] = useState(true);
-  // const handlelogin = async () => {
-  //   try {
-  //    <SignIn path="/sign-in" />
-  //     setLogin(true);
-  //   } catch (error) {
-  //     console.error("Error signing in:", error);
-  //   }
-  // };
   return (
     <div>
-      {!login ? (
-        <>
-        </>
-      ) : (
-        <>
-          {testStarted ? (
-            <>
-              <Webcam
-                ref={webcamRef}
-                width={640}
-                height={480}
-                screenshotFormat="image/jpeg"
-              />
-              <p>Lifeline: {remainingLifeline}</p>
-              {questions.map((question, z) => (
-                <div className="flex flex-col spacy-y-4" key={z}>
-                  <h2>{question.text}</h2>
-                  <div className="flex flex-row space-x-4">
-                    {question.answer.map((i, e) => {
-                      return (
-                        <button
-                          onClick={() => !submit && handleclick(e)}
-                          className={`text-xl p-3 ${
-                            submit
-                              ? question.l == index[z]
-                                ? "bg-green-300 "
-                                : "bg-red-300 "
-                              : ""
-                          } `}
-                        >
-                          {e}
-                        </button>
-                      );
-                    })}
-                  </div>
+      <>
+        {testStarted ? (
+          <>
+            <Webcam
+              ref={webcamRef}
+              width={640}
+              height={480}
+              screenshotFormat="image/jpeg"
+            />
+            <p>Lifeline: {remainingLifeline}</p>
+            {questions.map((question, z) => (
+              <div className="flex flex-col spacy-y-4" key={z}>
+                <h2>{question.text}</h2>
+                <div className="flex flex-row space-x-4">
+                  {question.answer.map((i, e) => {
+                    return (
+                      <button
+                        onClick={() => !submit && handleclick(e)}
+                        className={`text-xl p-3 ${
+                          submit
+                            ? question.l == index[z]
+                              ? "bg-green-300 "
+                              : "bg-red-300 "
+                            : ""
+                        } `}
+                      >
+                        {e}
+                      </button>
+                    );
+                  })}
                 </div>
-              ))}
+              </div>
+            ))}
+            <button
+              className="text-xl bg-yellow-300 p-5"
+              onClick={!submit ? handleSubmit : undefined}
+            >
+              {" "}
+              Submit{" "}
+            </button>
+            {submit && (
               <button
                 className="text-xl bg-yellow-300 p-5"
-                onClick={!submit ? handleSubmit : undefined}
+                onClick={() => setTestStarted(false)}
               >
                 {" "}
-                Submit{" "}
+                Reset{" "}
               </button>
-              {submit && (
-                <button
-                  className="text-xl bg-yellow-300 p-5"
-                  onClick={() => setTestStarted(false)}
-                >
-                  {" "}
-                  Reset{" "}
-                </button>
-              )}
-            </>
-          ) : (
-            <button onClick={handleStartTest}>Start Test</button>
-          )}
-        </>
-      )}
+            )}
+          </>
+        ) : (
+          <button onClick={handleStartTest}>Start Test</button>
+        )}
+      </>
     </div>
   );
 };
