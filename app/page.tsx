@@ -1,10 +1,12 @@
-import React, { useState, useRef } from 'react';
+'use client';
+
+import React, { useState, useRef, useEffect } from 'react';
 import Webcam from 'react-webcam';
 
 const IndexPage: React.FC = () => {
   const webcamRef = useRef<Webcam>(null);
   const [lifeline, setLifeline] = useState(3);
-
+const [alert, setAlert] = useState("")
   const handleCapture = async () => {
     if (webcamRef.current) {
       const imageSrc = webcamRef.current.getScreenshot();
@@ -18,10 +20,14 @@ const IndexPage: React.FC = () => {
             body: JSON.stringify({ image: imageSrc.split(',')[1] }),
           });
           const data = await response.json();
-          const { cheating_detected, lifeline: remainingLifeline } = data;
+          const {cheating_detected, lifeline: remainingLifeline } = data;
           setLifeline(remainingLifeline);
-          if (cheating_detected) {
-            alert('Cheating detected! You have lost a lifeline.');
+          console.log(cheating_detected)
+          if (cheating_detected==1) {
+            setAlert('Cheating detected! You have lost a lifeline.');
+          } else{
+            setAlert(`You're clean!`);
+
           }
         } catch (error) {
           console.error('Error detecting cheating:', error);
@@ -29,7 +35,14 @@ const IndexPage: React.FC = () => {
       }
     }
   };
-
+  useEffect(() => {
+    setTimeout(() => {
+      handleCapture()
+      console.log("sending requests")
+    }, 1000);
+    
+  }, [])
+  
   return (
     <div>
       <Webcam
@@ -38,7 +51,8 @@ const IndexPage: React.FC = () => {
         height={480}
         screenshotFormat="image/jpeg"
       />
-      <button onClick={handleCapture}>Check for Cheating</button>
+      {/* <button onClick={handleCapture}>Check for Cheating</button> */}
+      <h1>{alert}</h1>
       <p>Lifeline: {lifeline}</p>
     </div>
   );
