@@ -2,14 +2,10 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import Webcam from "react-webcam";
-import { SignOutButton, useSignIn, useUser } from "@clerk/nextjs";
-import { PrismaClient } from "@prisma/client";
-import { SignIn } from "@clerk/nextjs";
+import { SignOutButton, useUser } from "@clerk/nextjs";
 
 const IndexPage: React.FC = () => {
   const { user } = useUser();
-  const prisma = new PrismaClient();
-
   const webcamRef = useRef<Webcam>(null);
   const [testStarted, setTestStarted] = useState(false);
   const [index, setIndex] = useState<Number[]>([]);
@@ -20,14 +16,16 @@ const IndexPage: React.FC = () => {
   >([]);
 
   useEffect(() => {
-    if (testStarted) {
+    if (testStarted && remainingLifeline > 0) {
       const interval = setInterval(() => {
         handleCapture();
       }, 3000);
 
       return () => clearInterval(interval);
+    } else if (remainingLifeline <= 0) {
+      handleReset();
     }
-  }, [testStarted]);
+  }, [testStarted, remainingLifeline]);
 
   const handleStartTest = () => {
     setTestStarted(true);
@@ -46,7 +44,7 @@ const IndexPage: React.FC = () => {
       {
         text: "We are here because...",
         answer: [
-          "i don't know",
+          "my project is awesome",
           "i don't know",
           "i don't know",
           "i don't know",
@@ -55,62 +53,57 @@ const IndexPage: React.FC = () => {
       },
       {
         text: "Som is the coolest guy ever?",
-        answer: ["Yes", "Yes", "Yes", "Yes"],
+        answer: ["Yes", "no", "no", "no"],
         l: 0,
       },
       {
         text: "OpenAi should hire som?",
-        answer: ["Yes", "Yes", "Yes", "Yes"],
+        answer: ["Yes", "no", "no", "no"],
         l: 0,
       },
     ];
-    // Assuming you have a way to populate the questions array
     setQuestions(temp);
   };
 
   const handleCapture = async () => {
     if (webcamRef.current) {
       const imageSrc = webcamRef.current.getScreenshot();
-      if (imageSrc && submit==false) {
-        setTimeout(async () => {
-          
-          try {
-            const response = await fetch("/api/detect_cheating", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ image: imageSrc.split(",")[1] }),
-            });
-            const data = await response.json();
-            const { cheating_detected } = data;
-            if (cheating_detected === 1 || cheating_detected === -1) {
-              setRemainingLifeline(remainingLifeline - 1);
-              setTimeout(() => {
-                alert("Cheating detected! You have lost a lifeline.");
-                
-              }, 0);
-              if (remainingLifeline === 0) {
-                setTestStarted(false);
-                setTimeout(() => {
-                  alert("Take the test again, because you were cheating.");
-                }, 0);
-              }
-            }
-          } catch (error) {
-            console.error("Error detecting cheating:", error);
+      if (imageSrc && !submit) {
+        try {
+          const response = await fetch("/api/detect-cheating", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ image: imageSrc.split(",")[1] }),
+          });
+          const data = await response.json();
+          const { cheating_detected } = data;
+          if (cheating_detected === 1 || cheating_detected === -1) {
+            setRemainingLifeline((prev) => prev - 1);
+            alert("Cheating detected! You have lost a lifeline.");
           }
-        }, 0);
+        } catch (error) {
+          console.error("Error detecting cheating:", error);
         }
+        if (remainingLifeline <= 1) {
+          console.log("asdas");
+          setTestStarted(false);
+          handleReset();
+          alert("Take the test again, because you were cheating.");
+        }
+      }
     }
   };
-  const handleclick = (e: Number) => {
+
+  const handleClick = (e: Number) => {
     setIndex((prevIndex) => [...prevIndex, e]);
   };
+
   const handleSubmit = async () => {
     setSubmit(true);
     try {
-      console.log(user)
+      console.log(user);
       const response = await fetch("/api/create-test-result", {
         method: "POST",
         headers: {
@@ -130,12 +123,13 @@ const IndexPage: React.FC = () => {
     }
   };
 
-
-
-  const handleReset = ()=>{
-    setIndex([])
-    setTestStarted(false)
-  }
+  const handleReset = () => {
+    setIndex([]);
+    setTestStarted(false);
+    setSubmit(false);
+    setRemainingLifeline(3);
+    console.log(index);
+  };
 
   return (
     <div>
@@ -154,16 +148,19 @@ const IndexPage: React.FC = () => {
                 <h2>{question.text}</h2>
                 <div className="flex flex-row space-x-4">
                   {question.answer.map((i, e) => {
-                    console.log(question.l == index[z])
                     return (
-                      <button 
-                      key={e}
-                        onClick={() => !submit && handleclick(e)}
+                      <button
+                        key={e}
+                        onClick={() => !submit && handleClick(e)}
                         className={`text-xl p-3 ${
+                          index[z] === e && !submit ? "bg-white text-black" : ""
+                        } ${
                           submit
-                            ? question.l == index[z]
+                            ? question.l === e
                               ? "bg-green-300 "
-                              : "bg-red-300 "
+                              : index[z] === e
+                              ? "bg-red-300 "
+                              : ""
                             : ""
                         } `}
                       >
@@ -175,32 +172,35 @@ const IndexPage: React.FC = () => {
               </div>
             ))}
             <div className="flex flex-row space-x-5">
-
-            <button
-              className="text-xl bg-yellow-300 p-5"
-              onClick={!submit ? handleSubmit : undefined}
-            >
-              {" "}
-              Submit{" "}
-            </button>
-            {submit && (
               <button
                 className="text-xl bg-yellow-300 p-5"
-                onClick={handleReset}
+                onClick={!submit ? handleSubmit : undefined}
               >
                 {" "}
-                Reset{" "}
+                Submit{" "}
               </button>
-            )}
+              {submit && (
+                <button
+                  className="text-xl bg-yellow-300 p-5"
+                  onClick={handleReset}
+                >
+                  {" "}
+                  Reset{" "}
+                </button>
+              )}
             </div>
           </>
         ) : (
           <>
-          <button onClick={handleStartTest} className="text-xl bg-green-300 p-5">Start Test</button>
-          <button  className="text-xl mx-4 bg-green-300 p-5">
-          <SignOutButton/>
-            
-          </button>
+            <button
+              onClick={handleStartTest}
+              className="text-xl bg-green-300 p-5"
+            >
+              Start Test
+            </button>
+            <button className="text-xl mx-4 bg-green-300 p-5">
+              <SignOutButton />
+            </button>
           </>
         )}
       </>

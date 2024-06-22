@@ -6,16 +6,18 @@
     "dev": "next dev",
     "build": "next build",
     "start": "npm-run-all clean build:*",
-    "lint": "next lint",
-    "start-backend": "cd ml && .\\venv\\Scripts\\Activate && python app.py"
+    "lint": "next lint"
   },
   "dependencies": {
     "@clerk/clerk-js": "^5.1.1",
     "@clerk/nextjs": "^5.0.3",
-    "@prisma/client": "^5.13.0",
+    "@prisma/client": "^5.15.1",
     "@supabase/supabase-js": "^2.42.7",
+    "@tensorflow-models/face-landmarks-detection": "^1.0.5",
+    "@tensorflow/tfjs-node": "^4.20.0",
+    "axios": "^1.7.2",
     "next": "14.2.3",
-    "prisma": "^5.13.0",
+    "prisma": "^5.15.1",
     "react": "^18",
     "react-dom": "^18",
     "react-webcam": "^7.2.0"
