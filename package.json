@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "npm-run-all clean build:*",
-    "lint": "next lint"
+    "lint": "next lint",
+    "start-backend": "sudo apt-get update && sudo apt-get install -y libgl1-mesa-glx && pip install -r requirements.txt && cd ml && python app.py"
+
   },
   "dependencies": {
     "@clerk/clerk-js": "^5.1.1",
