@@ -6,6 +6,11 @@ This project is a test-taking website with facial recognition to detect cheating
 ![image](https://github.com/somwrks/AR-Quiz/assets/85481905/49d4022f-0748-4e67-b8ab-895e30e82f54)
 
 
+![Untitledvideo-MadewithClipchamp-ezgif com-video-to-gif-converter](https://github.com/somwrks/AR-Quiz/assets/85481905/2b2223b8-4cb3-4917-8cff-a2004ca0cd23)
+
+![image](https://github.com/somwrks/AR-Quiz/assets/85481905/12c42e15-2984-43f0-a68e-7542dd6e71ae)
+
+
 ## Tech Stack
 - Frontend:
   - Next.js
@@ -70,7 +75,3 @@ Feel free to contribute to this project by submitting pull requests. Make sure t
 
 ## License
 This project is licensed under the MIT License.
-
-![Untitledvideo-MadewithClipchamp-ezgif com-video-to-gif-converter](https://github.com/somwrks/AR-Quiz/assets/85481905/2b2223b8-4cb3-4917-8cff-a2004ca0cd23)
-
-![image](https://github.com/somwrks/AR-Quiz/assets/85481905/12c42e15-2984-43f0-a68e-7542dd6e71ae)
